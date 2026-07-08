@@ -1,0 +1,7 @@
+interface:
+  display_name: "Ali Java Code Style"
+  short_description: "Alibaba-style Java rules for code generation."
+  default_prompt: "Use $ali-java-code-style before generating or modifying Java code."
+
+policy:
+  allow_implicit_invocation: true
