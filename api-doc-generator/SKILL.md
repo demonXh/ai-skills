@@ -27,15 +27,29 @@ license: MIT
 node ~/.wiki-17u/scripts/wiki.mjs doc-status
 ```
 
-如果认证缺失或已过期，运行初始化脚本：
+如果认证缺失或已过期，有两种方式完成认证：
+
+**方式一（推荐，Agent 友好）**：用户手动从浏览器获取 Cookie 后通过参数传入
+
+提示用户：
+1. 在 Chrome 中打开 `https://wiki.17u.cn` 或 `https://toca.17u.cn` 并登录
+2. 按 F12 -> Network 面板 -> 刷新页面 -> 点击任意请求
+3. 在 Request Headers 中复制 Cookie 字段的完整值
+4. 把 Cookie 值给你，你运行：
+
+```bash
+node ~/.wiki-17u/scripts/setup.mjs --cookie "用户提供的Cookie值"
+```
+
+**方式二（交互式，人类手动运行）**：
 
 ```bash
 node ~/.wiki-17u/scripts/setup.mjs
 ```
 
-该脚本会优先尝试连接当前已打开的 Chrome 调试实例；失败后再自动打开浏览器登录；最后才走手动 Cookie 输入。
+该脚本会先尝试 Chrome 调试实例，失败后等待 stdin 输入 Cookie。Agent 不可直接运行交互模式（会超时），必须用 `--cookie` 参数。
 
-**安全规则**：不要打印 token 或 `~/.wiki-17u/config.json` 的内容。
+**安全规则**：不要打印 token、cookie 或 `~/.wiki-17u/config.json` 的内容。
 
 ### 第二步：在代码中定位 API 目标
 
@@ -168,10 +182,25 @@ host 模板：`http://flightadminapi{envSuffix}.17usoft.com/gdsaccmng`
 | `~/.wiki-17u/scripts/setup.mjs` | Wiki 认证初始化（Chrome 调试 / 浏览器登录 / 手动 Cookie） |
 | `~/.wiki-17u/scripts/write-wiki-markdown.mjs` | 将 Markdown 写入 Wiki 页面 |
 
+**注意**：这些脚本位于 `~/.wiki-17u/scripts/`，不在统一 skill 仓库内。Junction 只同步 `ai-skills/` 下的 SKILL.md 和 references，不同步外部脚本。如果脚本缺失，需要从 SKILL.md 中记录的脚本逻辑重新创建。
+
+## 常见问题
+
+1. **Wiki API 路径是占位实现。** `write-wiki-markdown.mjs` 中的 API 路径（`/api/wiki/doc/update` 和 `/api/wiki/saveDoc`）是基于通用模式的猜测。首次使用时如果写入失败，需要从 Wiki 页面的 Network 面板抓包获取真实 API 路径，然后更新脚本。
+
+2. **Wiki 脚本语法验证。** 三个 `.mjs` 脚本可用 `node --check` 验证语法。如果修改脚本后不确定是否正确，运行：
+   ```bash
+   node --check ~/.wiki-17u/scripts/setup.mjs
+   node --check ~/.wiki-17u/scripts/wiki.mjs
+   node --check ~/.wiki-17u/scripts/write-wiki-markdown.mjs
+   ```
+
+3. **PowerShell 编码问题。** 创建 Junction 时不要用 `cmd //c 'mklink /J ...'`，GBK 编码的输出 Python subprocess 无法解码。使用 PowerShell `New-Item -ItemType Junction`。
+
 ## 参考资源
 
 | 文件 | 用途 |
 |------|------|
 | `references/doc-template.md` | 文档模板 |
 | `references/http-api-example.md` | HTTP 接口完整范例 |
-| `references/checklist.md | 文档完成度自查清单 |
+| `references/checklist.md` | 文档完成度自查清单 |
