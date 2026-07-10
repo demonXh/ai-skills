@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "pre_write_code": [
+      {
+        "command": "node \"C:/Users/Demon/ai-skills/.windsurf/skills/comet/scripts/comet-hook-guard.mjs\" --project-root \"C:/Users/Demon/ai-skills\"",
+        "show_output": true
+      }
+    ]
+  }
+}

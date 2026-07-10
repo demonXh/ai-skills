@@ -206,7 +206,18 @@ http://flightadminapi{envSuffix}.17usoft.com/gdsaccmng
 
 ---
 
-## 8. 参考资源
+## 8. 常见坑：外部工具集成（如 Wiki 写入）
+
+如果未来要重新接入 Wiki 或其他外部系统（如 17u Wiki、Confluence、飞书文档），脚本必须遵循以下规则：
+
+- **禁止交互式输入**：不要用 `readline`、`prompt`、`stdin` 等等待用户输入的方式。Agent（Codex/OpenCode/Hermes）运行脚本时无法处理交互输入，会直接超时（Codex 默认 600s timeout）。
+- **用 CLI 参数传值**：如 `node script.mjs --cookie "xxx" --url "yyy"`，Agent 通过参数传入所有必要信息。
+- **无参数时打印提示并退出码 1**：Agent 读到提示后知道该向用户索取信息。
+- **认证信息存配置文件**：写入 `~/.xxx/config.json`，后续脚本读取即可。
+
+曾尝试将生成的接口文档直接写入 17u Wiki，因脚本使用 readline 交互输入导致 Codex Agent 600s 超时，已回退。如需重新实现，参考 `references/wiki-integration-pitfalls.md`。
+
+## 9. 参考资源
 
 | 文件 | 用途 |
 |------|------|
@@ -214,3 +225,4 @@ http://flightadminapi{envSuffix}.17usoft.com/gdsaccmng
 | `references/http-api-example.md` | HTTP 接口完整范例（含 4 环境 URL 与流程图占位） |
 | `references/checklist.md` | 文档完成度自查清单 |
 | `references/README.md` | 参考目录索引 |
+| `references/wiki-integration-pitfalls.md` | 外部 Wiki 写入集成踩坑记录和正确方案 |

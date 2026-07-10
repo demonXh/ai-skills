@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "matcher": "write_file|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/Demon/ai-skills/.gemini/skills/comet/scripts/comet-hook-guard.mjs\" --project-root \"C:/Users/Demon/ai-skills\"",
+            "name": "Block code writes in wrong Comet phase (open/design/archive)"
+          }
+        ]
+      }
+    ]
+  }
+}
